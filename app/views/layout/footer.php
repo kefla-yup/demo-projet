@@ -79,6 +79,11 @@
                         <p class="text-lg-center text-center text-light light-300">
                             © <?php echo date('Y'); ?> Takalo-takalo. Tous droits réservés.
                         </p>
+                        <p class="text-lg-center text-center text-light light-300">
+                            ETU003877 Itiela <br>
+                            ETU004179 Houssena <br>
+                            ETU003888 Armella
+                        </p>
                     </div>
                 </div>
             </div>
