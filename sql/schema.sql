@@ -70,6 +70,6 @@ INSERT INTO users (nom, email, password) VALUES
 
 -- Insertion d'objets de test
 INSERT INTO objets (nom, description, categorie_id, user_id, photo) VALUES
-('Livre Harry Potter', 'Livre Harry Potter et la pierre philosophale, bon état', 2, 1, NULL),
-('T-shirt Adidas', 'T-shirt Adidas taille M, couleur bleu, jamais porté', 1, 1, NULL),
-('Casque audio Sony', 'Casque audio Sony WH-1000XM3, excellent état', 4, 1, NULL);
+('Livre Harry Potter', 'Livre Harry Potter et la pierre philosophale, bon état', 2, 1, 'hp.png'),
+('T-shirt Adidas', 'T-shirt Adidas taille M, couleur bleu, jamais porté', 1, 1, 'ad.png'),
+('Casque audio Sony', 'Casque audio Sony WH-1000XM3, excellent état', 4, 1, 'ca.png');
