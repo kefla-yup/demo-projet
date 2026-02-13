@@ -64,13 +64,10 @@ class AuthController {
     
     public static function login() {
         $data = Flight::request()->data->getData();
-        // debug: log posted data
-        @file_put_contents(__DIR__ . '/../../login_debug.txt', var_export($data, true) . "\n", FILE_APPEND);
+        // debug: previously logged posted data to login_debug.txt (removed)
         
         $userModel = new User();
         $user = $userModel->findByEmail($data['email']);
-        @file_put_contents(__DIR__ . '/../../login_debug.txt', "USER:" . var_export($user, true) . "\n", FILE_APPEND);
-        @file_put_contents(__DIR__ . '/../../login_debug.txt', "VERIFY:" . (isset($user['password']) ? (password_verify($data['password'], $user['password']) ? '1' : '0') : 'no-pass') . "\n", FILE_APPEND);
         
         if ($user && password_verify($data['password'], $user['password'])) {
             $_SESSION['user_id'] = $user['id'];

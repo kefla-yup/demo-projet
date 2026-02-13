@@ -140,6 +140,25 @@ class Routes {
             call_user_func(['App\Controllers\CategoryController', 'index']);
         });
 
+        // Debug session (temporary)
+        Flight::route('/_debug_session', function() {
+            header('Content-Type: text/plain');
+            echo "SESSION:\n";
+            var_export(isset($_SESSION) ? $_SESSION : []);
+            if (isset($_SESSION['user_id'])) {
+                try {
+                    $pdo = Flight::db();
+                    $stmt = $pdo->prepare("SELECT id, email, is_admin FROM users WHERE id = ?");
+                    $stmt->execute([$_SESSION['user_id']]);
+                    $row = $stmt->fetch();
+                    echo "\nDB USER:\n";
+                    var_export($row);
+                } catch (\Throwable $e) {
+                    echo "\nDB ERROR: " . $e->getMessage();
+                }
+            }
+        });
+
         Flight::route('GET /admin/categories/nouveau', function() {
             call_user_func(['App\Controllers\CategoryController', 'create']);
         });

@@ -21,7 +21,7 @@ class UserController {
                 'mesEchanges' => $mesEchanges
             ]);
         } catch (\Throwable $e) {
-            @file_put_contents(__DIR__ . '/../../login_debug.txt', "DASHBOARD ERROR: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n", FILE_APPEND);
+            // debug: previously logged dashboard errors to login_debug.txt (removed)
             Flight::render('errors/404', ['title' => 'Erreur interne']);
         }
     }

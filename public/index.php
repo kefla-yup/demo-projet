@@ -32,6 +32,18 @@ try {
     die("Erreur de connexion à la base de données: " . $e->getMessage());
 }
 
+// Ensure session has up-to-date admin flag when a user_id is present
+if (isset($_SESSION['user_id'])) {
+    try {
+        $stmt = $pdo->prepare("SELECT is_admin FROM users WHERE id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $row = $stmt->fetch();
+        $_SESSION['user_is_admin'] = !empty($row['is_admin']);
+    } catch (\Throwable $e) {
+        // ignore - don't break the app for session sync issues
+    }
+}
+
 // Configuration des chemins
 Flight::set('app.root', realpath(__DIR__ . '/../'));
 Flight::set('app.public', __DIR__);
