@@ -23,4 +23,39 @@ https://templatemo.com/tm-561-purple-buzz
 	}
 }
 
+/* Thumbnails for object detail */
+.thumbnail-img {
+	width: 80px;
+	height: 80px;
+	object-fit: cover;
+	cursor: pointer;
+	transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.thumbnail-img:hover { transform: scale(1.03); }
+.thumbnail-active {
+	box-shadow: 0 0 0 3px rgba(13,110,253,0.25);
+	transform: scale(1.05);
+}
+
+/* Main image sizing: larger display but responsive */
+.main-image {
+	width: 400px;
+	height: 400px;
+	object-fit: cover;
+	display: block;
+	max-width: 100%;
+}
+
+@media (max-width: 768px) {
+	.main-image {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 1 / 1;
+	}
+	.thumbnail-img {
+		width: 64px;
+		height: 64px;
+	}
+}
+
 

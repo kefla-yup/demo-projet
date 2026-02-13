@@ -14,12 +14,16 @@
         <div class="col-md-6">
             <?php if(!empty($objet['photos'])): ?>
                 <div class="mb-3">
-                    <img id="mainImage" src="/uploads/<?php echo htmlspecialchars($objet['photos'][0]); ?>" class="img-fluid rounded shadow" alt="<?php echo htmlspecialchars($objet['nom']); ?>">
+                    <img id="mainImage" src="/uploads/<?php echo htmlspecialchars($objet['photos'][0]); ?>" class="main-image img-fluid rounded shadow" alt="<?php echo htmlspecialchars($objet['nom']); ?>">
                 </div>
-                <div class="d-flex flex-wrap">
-                    <?php foreach($objet['photos'] as $p): ?>
-                        <img src="/uploads/<?php echo htmlspecialchars($p); ?>" class="img-thumbnail me-2 mb-2" style="height:80px;cursor:pointer;" onclick="document.getElementById('mainImage').src=this.src">
+                <div class="d-flex flex-wrap align-items-center" id="thumbnails">
+                    <?php foreach($objet['photos'] as $index => $p): ?>
+                        <?php if ($index === 0) continue; // skip first since it's shown as main image ?>
+                        <img src="/uploads/<?php echo htmlspecialchars($p); ?>" data-src="/uploads/<?php echo htmlspecialchars($p); ?>" class="thumbnail-img img-thumbnail me-2 mb-2" alt="<?php echo htmlspecialchars($objet['nom']); ?> - <?php echo $index+1; ?>" data-index="<?php echo $index; ?>">
                     <?php endforeach; ?>
+                    <?php if (count($objet['photos']) > 1): ?>
+                        <small class="text-muted ms-2">Cliquez sur une miniature pour afficher</small>
+                    <?php endif; ?>
                 </div>
             <?php else: ?>
                 <img src="/assets/img/no-image.jpg" class="img-fluid rounded shadow" alt="Pas d'image">
@@ -161,5 +165,25 @@
     });
 </script>
 <?php endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const thumbs = document.querySelectorAll('.thumbnail-img');
+    const main = document.getElementById('mainImage');
+    if (!main) return;
+    if (thumbs.length) {
+        thumbs.forEach(function(t) {
+            t.addEventListener('click', function() {
+                const src = this.dataset.src || this.src;
+                if (src) main.src = src;
+                document.querySelectorAll('.thumbnail-img').forEach(x => x.classList.remove('thumbnail-active'));
+                this.classList.add('thumbnail-active');
+            });
+        });
+        // mark first thumbnail as active
+        thumbs[0].classList.add('thumbnail-active');
+    }
+});
+</script>
 
 <?php include '../app/views/layout/footer.php'; ?>
