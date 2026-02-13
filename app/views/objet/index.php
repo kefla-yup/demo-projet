@@ -6,14 +6,22 @@
     <!-- Filtres par catégorie -->
     <div class="row mb-4">
         <div class="col-md-12">
-            <div class="filter-btns shadow-md rounded-pill text-center col-auto">
-                <a class="filter-btn btn rounded-pill btn-outline-primary border-0 m-md-2 px-md-4 <?php echo !isset($selectedCategorie) ? 'active' : ''; ?>" href="/objets">Tous</a>
-                <?php foreach($categories as $categorie): ?>
-                    <a class="filter-btn btn rounded-pill btn-outline-primary border-0 m-md-2 px-md-4 <?php echo $selectedCategorie == $categorie['id'] ? 'active' : ''; ?>" href="/objets?categorie_id=<?php echo $categorie['id']; ?>">
-                        <?php echo htmlspecialchars($categorie['nom']); ?>
-                    </a>
-                <?php endforeach; ?>
-            </div>
+            <form class="row g-2 align-items-center" method="GET" action="/objets">
+                <div class="col-auto">
+                    <input type="text" class="form-control" name="q" placeholder="Mot-clé" value="<?php echo htmlspecialchars($q ?? ''); ?>">
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" name="categorie_id">
+                        <option value="">Tous</option>
+                        <?php foreach($categories as $categorie): ?>
+                            <option value="<?php echo $categorie['id']; ?>" <?php echo ($selectedCategorie == $categorie['id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($categorie['nom']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-primary">Rechercher</button>
+                </div>
+            </form>
         </div>
     </div>
     
@@ -36,6 +44,9 @@
                         <?php endif; ?>
                         <div class="card-body">
                             <h5 class="card-title"><?php echo htmlspecialchars($objet['nom']); ?></h5>
+                            <?php if(!empty($objet['prix_estime'])): ?>
+                                <p class="mb-2"><strong>Prix estimé : </strong><?php echo number_format($objet['prix_estime'], 2, ',', ' '); ?> €</p>
+                            <?php endif; ?>
                             <p class="card-text text-muted"><?php echo substr(htmlspecialchars($objet['description']), 0, 150) . '...'; ?></p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="badge bg-secondary"><?php echo htmlspecialchars($objet['categorie']); ?></span>

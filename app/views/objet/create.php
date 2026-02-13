@@ -25,6 +25,11 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="prix_estime" class="form-label">Prix estimatif (optionnel)</label>
+                            <input type="number" step="0.01" class="form-control" id="prix_estime" name="prix_estime" placeholder="0.00">
+                        </div>
                         
                         <div class="mb-3">
                             <label for="description" class="form-label">Description *</label>
@@ -33,9 +38,9 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label for="photo" class="form-label">Photo de l'objet</label>
-                            <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
-                            <small class="text-muted">Formats acceptés: JPG, PNG, GIF (max 5MB)</small>
+                            <label for="photos" class="form-label">Photos de l'objet</label>
+                            <input type="file" class="form-control" id="photos" name="photos[]" accept="image/*" multiple>
+                            <small class="text-muted">Formats acceptés: JPG, PNG, GIF (max 5MB par image)</small>
                             <div class="mt-2" id="imagePreview"></div>
                         </div>
                         
@@ -51,19 +56,23 @@
 </div>
 
 <script>
-    // Aperçu de l'image
-    document.getElementById('photo').addEventListener('change', function(e) {
-        const file = e.target.files[0];
+    // Aperçu des images sélectionnées
+    document.getElementById('photos').addEventListener('change', function(e) {
+        const files = e.target.files;
         const preview = document.getElementById('imagePreview');
-        
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.innerHTML = '<img src="' + e.target.result + '" class="img-thumbnail mt-2" style="max-height: 200px;">';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            preview.innerHTML = '';
+        preview.innerHTML = '';
+        if (files.length) {
+            Array.from(files).forEach(function(file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const img = document.createElement('img');
+                    img.src = ev.target.result;
+                    img.className = 'img-thumbnail mt-2 me-2';
+                    img.style.maxHeight = '120px';
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
         }
     });
 </script>

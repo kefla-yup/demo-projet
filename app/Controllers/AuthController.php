@@ -76,6 +76,7 @@ class AuthController {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_nom'] = $user['nom'];
             $_SESSION['user_email'] = $user['email'];
+            $_SESSION['user_is_admin'] = !empty($user['is_admin']);
             
             Flight::flash('success', 'Connexion réussie !');
             Flight::redirect('/dashboard');
