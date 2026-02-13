@@ -74,5 +74,9 @@ INSERT INTO objets (nom, description, categorie_id, user_id, photo) VALUES
 ('T-shirt Adidas', 'T-shirt Adidas taille M, couleur bleu, jamais porté', 1, 1, 'ad.png'),
 ('Casque audio Sony', 'Casque audio Sony WH-1000XM3, excellent état', 4, 1, 'ca.png');
 -- Insertion d'échanges de test
-INSERT INTO objets (nom, description, categorie_id, user_id, photo) VALUES
+
+NSERT INTO objets (nom, description, categorie_id, user_id, photo) VALUES
 ('SAC', 'Belle sac en crochet, très confortable', 5, 1, 'arm.png');
+
+INSERT INTO objets (nom, description, categorie_id, user_id, photo) VALUES
+('SAC', 'Belle sac en crochet desing cool, très confortable', 8, 1, 'sac.png');
