@@ -12,8 +12,15 @@
     <div class="row">
         <!-- Image de l'objet -->
         <div class="col-md-6">
-            <?php if($objet['photo']): ?>
-                <img src="/uploads/<?php echo htmlspecialchars($objet['photo']); ?>" class="img-fluid rounded shadow" alt="<?php echo htmlspecialchars($objet['nom']); ?>">
+            <?php if(!empty($objet['photos'])): ?>
+                <div class="mb-3">
+                    <img id="mainImage" src="/uploads/<?php echo htmlspecialchars($objet['photos'][0]); ?>" class="img-fluid rounded shadow" alt="<?php echo htmlspecialchars($objet['nom']); ?>">
+                </div>
+                <div class="d-flex flex-wrap">
+                    <?php foreach($objet['photos'] as $p): ?>
+                        <img src="/uploads/<?php echo htmlspecialchars($p); ?>" class="img-thumbnail me-2 mb-2" style="height:80px;cursor:pointer;" onclick="document.getElementById('mainImage').src=this.src">
+                    <?php endforeach; ?>
+                </div>
             <?php else: ?>
                 <img src="/assets/img/no-image.jpg" class="img-fluid rounded shadow" alt="Pas d'image">
             <?php endif; ?>
@@ -40,6 +47,30 @@
                             <i class='bx bx-phone'></i> <?php echo htmlspecialchars($objet['telephone']); ?>
                         <?php endif; ?>
                     </p>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Historique d'appartenance</h5>
+                </div>
+                <div class="card-body">
+                    <?php if(empty($ownershipTimeline)): ?>
+                        <p class="text-muted">Aucun échange accepté pour cet objet — pas d'historique de transfert.</p>
+                    <?php else: ?>
+                        <ul class="list-group">
+                            <?php foreach($ownershipTimeline as $ev): ?>
+                                <li class="list-group-item">
+                                    <strong><?php echo date('d/m/Y H:i', strtotime($ev['date'])); ?></strong>
+                                    &nbsp;: <em><?php echo htmlspecialchars($ev['from']); ?></em>
+                                    &nbsp;→&nbsp; <em><?php echo htmlspecialchars($ev['to']); ?></em>
+                                    <?php if(!empty($ev['message'])): ?>
+                                        <div class="small text-muted">Message: <?php echo htmlspecialchars($ev['message']); ?></div>
+                                    <?php endif; ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
                 </div>
             </div>
             

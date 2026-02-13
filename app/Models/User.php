@@ -4,7 +4,7 @@ namespace App\Models;
 class User extends BaseModel {
     
     public function create($data) {
-        $sql = "INSERT INTO users (nom, email, password, telephone, adresse) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO users (nom, email, password, telephone, adresse, is_admin) VALUES (?, ?, ?, ?, ?, ?)";
         
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
@@ -12,7 +12,8 @@ class User extends BaseModel {
             $data['email'],
             password_hash($data['password'], PASSWORD_DEFAULT),
             $data['telephone'] ?? null,
-            $data['adresse'] ?? null
+            $data['adresse'] ?? null,
+            $data['is_admin'] ?? 0
         ]);
     }
     
@@ -45,6 +46,13 @@ class User extends BaseModel {
     public function getAll() {
         $sql = "SELECT id, nom, email, created_at FROM users ORDER BY nom";
         return $this->db->query($sql)->fetchAll();
+    }
+
+    public function countAll() {
+        $sql = "SELECT COUNT(*) as c FROM users";
+        $stmt = $this->db->query($sql);
+        $row = $stmt->fetch();
+        return $row ? (int)$row['c'] : 0;
     }
 }
 ?>
