@@ -128,6 +128,35 @@ class Routes {
         });
         
         Flight::route('/logout', ['App\Controllers\AuthController', 'logout']);
+
+        // Admin dashboard
+        Flight::route('/admin', function() {
+            if (!isset($_SESSION['user_id'])) { Flight::redirect('/login'); return; }
+            call_user_func(['App\Controllers\AdminController', 'dashboard']);
+        });
+
+        // Admin - gestion des catégories
+        Flight::route('/admin/categories', function() {
+            call_user_func(['App\Controllers\CategoryController', 'index']);
+        });
+
+        Flight::route('GET /admin/categories/nouveau', function() {
+            call_user_func(['App\Controllers\CategoryController', 'create']);
+        });
+        Flight::route('POST /admin/categories/nouveau', function() {
+            call_user_func(['App\Controllers\CategoryController', 'store']);
+        });
+
+        Flight::route('/admin/categories/@id/editer', function($id) {
+            call_user_func(['App\Controllers\CategoryController', 'edit'], $id);
+        });
+        Flight::route('POST /admin/categories/@id/editer', function($id) {
+            call_user_func(['App\Controllers\CategoryController', 'update'], $id);
+        });
+
+        Flight::route('POST /admin/categories/@id/supprimer', function($id) {
+            call_user_func(['App\Controllers\CategoryController', 'delete'], $id);
+        });
         
         // Route 404
         Flight::map('notFound', function() {

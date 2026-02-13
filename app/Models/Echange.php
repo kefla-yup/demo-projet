@@ -33,6 +33,25 @@ class Echange extends BaseModel {
         return $stmt->fetchAll();
     }
 
+    public function countAll() {
+        $sql = "SELECT COUNT(*) as c FROM echanges";
+        $stmt = $this->db->query($sql);
+        $row = $stmt->fetch();
+        return $row ? (int)$row['c'] : 0;
+    }
+
+    public function getAcceptedEventsForObject($objetId) {
+        $sql = "SELECT e.*, p.nom as proposeur_nom, pr.nom as proprietaire_nom
+                FROM echanges e
+                JOIN users p ON e.proposeur_id = p.id
+                JOIN users pr ON e.proprietaire_id = pr.id
+                WHERE e.statut = 'accepte' AND (e.objet_propose_id = ? OR e.objet_demande_id = ?)
+                ORDER BY e.created_at ASC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$objetId, $objetId]);
+        return $stmt->fetchAll();
+    }
+
     public function findById($id) {
         $sql = "SELECT e.*,
                 op.user_id as objet_propose_owner, op.nom as objet_propose_nom,

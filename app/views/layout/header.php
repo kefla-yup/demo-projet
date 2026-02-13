@@ -41,6 +41,11 @@
                             <li class="nav-item">
                                 <a class="nav-link btn-outline-primary rounded-pill px-3" href="/dashboard">Tableau de bord</a>
                             </li>
+                            <?php if(!empty($_SESSION['user_is_admin'])): ?>
+                            <li class="nav-item">
+                                <a class="nav-link btn-outline-primary rounded-pill px-3" href="/admin/categories">Admin</a>
+                            </li>
+                            <?php endif; ?>
                             <li class="nav-item">
                                 <a class="nav-link btn-outline-primary rounded-pill px-3" href="/objets/nouveau">Ajouter un objet</a>
                             </li>

@@ -8,17 +8,27 @@ class ObjectController {
     public static function index() {
         $objetModel = new Objet();
         $categories = $objetModel->getCategories();
-        
-        $categorieId = Flight::request()->query->categorie_id;
-        $objets = $categorieId 
-            ? $objetModel->getByCategorie($categorieId)
-            : $objetModel->getAll();
+
+        $request = Flight::request();
+        $categorieId = $request->query->categorie_id;
+        $q = trim($request->query->q ?? '');
+
+        if (!empty($q) && !empty($categorieId)) {
+            $objets = $objetModel->searchByKeywordAndCategory($q, $categorieId);
+        } elseif (!empty($q)) {
+            $objets = $objetModel->searchByKeyword($q);
+        } elseif (!empty($categorieId)) {
+            $objets = $objetModel->getByCategorie($categorieId);
+        } else {
+            $objets = $objetModel->getAll();
+        }
         
         Flight::render('objet/index', [
             'title' => 'Objets disponibles - Takalo-takalo',
             'objets' => $objets,
             'categories' => $categories,
-            'selectedCategorie' => $categorieId
+            'selectedCategorie' => $categorieId,
+            'q' => $q
         ]);
     }
     
@@ -37,10 +47,33 @@ class ObjectController {
             $mesObjets = $objetModel->getByUser($_SESSION['user_id']);
         }
         
+        // Ownership history events
+        $echangeModel = new \App\Models\Echange();
+        $historyEvents = $echangeModel->getAcceptedEventsForObject($id);
+        $ownershipTimeline = [];
+        foreach ($historyEvents as $ev) {
+            if ($ev['objet_propose_id'] == $id) {
+                // object was proposed by proposeur -> transferred to proprietaire
+                $from = $ev['proposeur_nom'];
+                $to = $ev['proprietaire_nom'];
+            } else {
+                // object was demanded -> transferred from proprietaire to proposeur
+                $from = $ev['proprietaire_nom'];
+                $to = $ev['proposeur_nom'];
+            }
+            $ownershipTimeline[] = [
+                'date' => $ev['created_at'],
+                'from' => $from,
+                'to' => $to,
+                'message' => $ev['message'] ?? null
+            ];
+        }
+        
         Flight::render('objet/show', [
             'title' => $objet['nom'] . ' - Takalo-takalo',
             'objet' => $objet,
-            'mesObjets' => $mesObjets
+            'mesObjets' => $mesObjets,
+            'ownershipTimeline' => $ownershipTimeline
         ]);
     }
     
@@ -72,40 +105,58 @@ class ObjectController {
             return;
         }
         
-        // Gestion de l'upload de photo
-        $photoName = null;
-        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+        // Gestion de l'upload de plusieurs photos (input name="photos[]")
+        $uploadedFiles = [];
+        $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+
+        if (isset($_FILES['photos'])) {
+            $files = $_FILES['photos'];
+            for ($i = 0; $i < count($files['name']); $i++) {
+                if ($files['error'][$i] === UPLOAD_ERR_OK) {
+                    $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
+                    if (in_array($ext, $allowedTypes)) {
+                        $photoName = uniqid() . '.' . $ext;
+                        $uploadPath = Flight::get('app.uploads') . $photoName;
+                        if (move_uploaded_file($files['tmp_name'][$i], $uploadPath)) {
+                            $uploadedFiles[] = $photoName;
+                        }
+                    }
+                }
+            }
+        } elseif (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            // Backwards compatibility with single photo input
             $photo = $_FILES['photo'];
             $ext = strtolower(pathinfo($photo['name'], PATHINFO_EXTENSION));
-            $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
-            
             if (in_array($ext, $allowedTypes)) {
                 $photoName = uniqid() . '.' . $ext;
                 $uploadPath = Flight::get('app.uploads') . $photoName;
-                
-                if (!move_uploaded_file($photo['tmp_name'], $uploadPath)) {
-                    Flight::flash('error', 'Erreur lors de l\'upload de la photo');
-                    Flight::redirect('/objets/nouveau');
-                    return;
+                if (move_uploaded_file($photo['tmp_name'], $uploadPath)) {
+                    $uploadedFiles[] = $photoName;
                 }
             }
         }
-        
+
         $objetModel = new Objet();
-        
+
         $objetData = [
             'nom' => $data['nom'],
             'description' => $data['description'],
+            'prix_estime' => isset($data['prix_estime']) ? $data['prix_estime'] : null,
             'categorie_id' => $data['categorie_id'],
             'user_id' => $_SESSION['user_id'],
-            'photo' => $photoName
+            'photo' => count($uploadedFiles) ? $uploadedFiles[0] : null
         ];
-        
-        if ($objetModel->create($objetData)) {
+
+        $newId = $objetModel->create($objetData);
+        if ($newId) {
+            // Enregistrer toutes les photos en base
+            foreach ($uploadedFiles as $f) {
+                $objetModel->addPhoto($newId, $f);
+            }
             Flight::flash('success', 'Objet ajouté avec succès !');
             Flight::redirect('/dashboard');
         } else {
-                @file_put_contents(__DIR__ . '/../../objet_debug.txt', "CREATE FAILED: " . var_export($objetData, true) . "\n", FILE_APPEND);
+            @file_put_contents(__DIR__ . '/../../objet_debug.txt', "CREATE FAILED: " . var_export($objetData, true) . "\n", FILE_APPEND);
             Flight::flash('error', 'Erreur lors de l\'ajout de l\'objet');
             Flight::redirect('/objets/nouveau');
         }
