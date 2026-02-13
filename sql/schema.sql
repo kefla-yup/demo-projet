@@ -74,7 +74,6 @@ CREATE TABLE IF NOT EXISTS echanges (
 ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin TINYINT(1) DEFAULT 0;
 ALTER TABLE objets ADD COLUMN IF NOT EXISTS prix_estime DECIMAL(10,2) DEFAULT NULL;
 
--- Populate default categories (INSERT IGNORE avoids duplicate key errors)
 INSERT IGNORE INTO categories (nom) VALUES
 ('Vêtements'),
 ('Livres'),
