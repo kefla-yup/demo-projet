@@ -81,7 +81,7 @@ INSERT INTO categories (nom) VALUES
 INSERT IGNORE INTO users (nom, email, password, is_admin) VALUES
 ('Test Utilisateur', 'test@example.com', '$2y$10$K4iVs6fwQeL2/4IkhF.jbO2w6Ej5Yy0y3zA6n5GJ5tW5d5J5L5V5W', 0);
 INSERT IGNORE INTO users (nom, email, password, is_admin) VALUES
-('Admin Utilisateur', 'admin@example.com', '$2y$10$fKu0neX9nXiN6y88ag72zeQK1At5GAqNQZWoUeMqmCmeSXn5sxPDG', 1);
+('Admin', 'admin@admin.com', '$2y$10$fKu0neX9nXiN6y88ag72zeQK1At5GAqNQZWoUeMqmCmeSXn5sxPDG', 1);
 
 -- Example objets with prix_estime
 INSERT IGNORE INTO objets (nom, description, prix_estime, categorie_id, user_id, photo) VALUES
