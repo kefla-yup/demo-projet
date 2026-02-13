@@ -75,7 +75,7 @@ INSERT INTO objets (nom, description, categorie_id, user_id, photo) VALUES
 ('Casque audio Sony', 'Casque audio Sony WH-1000XM3, excellent état', 4, 1, 'ca.png');
 -- Insertion d'échanges de test
 
-NSERT INTO objets (nom, description, categorie_id, user_id, photo) VALUES
+INSERT INTO objets (nom, description, categorie_id, user_id, photo) VALUES
 ('SAC', 'Belle sac en crochet, très confortable', 5, 1, 'arm.png');
 
 INSERT INTO objets (nom, description, categorie_id, user_id, photo) VALUES
